@@ -1,0 +1,30 @@
+@model List<BookingModel>
+@{ Layout = "_AppLayout"; }
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">No bookings yet.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>#</th><th>Service</th><th>Customer</th><th>Provider</th><th>Slot</th><th>Price</th><th>Status</th><th>Booked</th></tr></thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td>#@b.BookingID</td>
+                        <td>@b.ServiceName</td>
+                        <td>@b.CustomerName</td>
+                        <td>@b.ProviderName</td>
+                        <td>@b.SlotDisplay</td>
+                        <td>Rs. @b.Price.ToString("N0")</td>
+                        <td><partial name="_StatusPill" model="@b.StatusName" /></td>
+                        <td class="text-secondary small">@b.BookedAtDisplay</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

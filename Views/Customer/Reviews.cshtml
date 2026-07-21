@@ -1,0 +1,118 @@
+@model ReviewsViewModel
+@{ Layout = "_AppLayout"; }
+
+<h5 class="mb-2" style="color:var(--sv-gold)">Pending Reviews</h5>
+@if (Model.Unreviewed.Count == 0)
+{
+    <div class="empty-state mb-4">No completed bookings waiting for a review.</div>
+}
+else
+{
+    <div class="table-wrap mb-4">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Service</th><th>Provider</th><th>Date</th><th>Price</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var u in Model.Unreviewed)
+                {
+                    <tr>
+                        <td>@u.ServiceName</td>
+                        <td>@u.ProviderName</td>
+                        <td>@u.SlotDate.ToString("MMM dd, yyyy")</td>
+                        <td>Rs. @u.Price.ToString("N0")</td>
+                        <td class="text-end"><button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#rate-@u.BookingID">⭐ Write Review</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<h5 class="mb-2" style="color:var(--sv-success)">Your Reviews</h5>
+@if (Model.Reviewed.Count == 0)
+{
+    <div class="empty-state">You haven't submitted any reviews yet.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Service</th><th>Provider</th><th>Date</th><th>Rating</th><th>Comment</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var r in Model.Reviewed)
+                {
+                    <tr>
+                        <td>@r.ServiceName</td>
+                        <td>@r.ProviderName</td>
+                        <td>@r.SlotDate.ToString("MMM dd, yyyy")</td>
+                        <td class="stars">@(new string('★', r.Stars))</td>
+                        <td class="text-secondary">@r.Comment</td>
+                        <td class="text-end"><button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#edit-@r.BookingID">✏ Edit</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@foreach (var u in Model.Unreviewed)
+{
+    <div class="modal fade" id="rate-@u.BookingID" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="SubmitReview" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookingId" value="@u.BookingID" />
+                    <input type="hidden" name="providerId" value="@u.ProviderID" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Rate @u.ProviderName</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="star-radio mb-3">
+                            @for (int i = 5; i >= 1; i--)
+                            {
+                                <input type="radio" name="stars" id="rstar-@u.BookingID-@i" value="@i" required />
+                                <label for="rstar-@u.BookingID-@i">★</label>
+                            }
+                        </div>
+                        <textarea class="form-control" name="comment" rows="3" placeholder="Share your experience…"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit Rating</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@foreach (var r in Model.Reviewed)
+{
+    <div class="modal fade" id="edit-@r.BookingID" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="EditReview" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookingId" value="@r.BookingID" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit review for @r.ProviderName</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="star-radio mb-3">
+                            @for (int i = 5; i >= 1; i--)
+                            {
+                                <input type="radio" name="stars" id="estar-@r.BookingID-@i" value="@i" required checked="@(i == r.Stars)" />
+                                <label for="estar-@r.BookingID-@i">★</label>
+                            }
+                        </div>
+                        <textarea class="form-control" name="comment" rows="3">@r.Comment</textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

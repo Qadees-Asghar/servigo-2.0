@@ -1,0 +1,37 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="brand">SERVIGO</div>
+        <div class="subtitle">Sign in to your account</div>
+
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
+            <div class="alert alert-danger py-2">⚠ @Model.Error</div>
+        }
+
+        <form asp-controller="Account" asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" type="email" name="Email" value="@Model.Email" placeholder="your@email.com" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">User ID</label>
+                <input class="form-control" type="text" name="UserID" value="@Model.UserID" placeholder="SRV-XXXXX" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input class="form-control" type="password" name="Password" placeholder="Your password" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2">LOGIN</button>
+        </form>
+
+        <div class="auth-switch">
+            Don't have an account? <a asp-controller="Account" asp-action="Signup">Sign up</a>
+        </div>
+    </div>
+</div>

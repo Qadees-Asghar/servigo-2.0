@@ -1,0 +1,21 @@
+@{ Layout = "_AppLayout"; }
+
+<p class="fw-bold @(ViewBag.IsApproved ? "text-success" : "text-secondary") mb-4">
+    @(ViewBag.IsApproved ? "✔ Verified Provider — badge granted by admin." : "○ Not yet verified — you can fully use all features.")
+</p>
+
+<div class="d-flex flex-wrap gap-3 mb-4">
+    <div class="stat-card" style="--stat-color: var(--sv-success);">
+        <div class="stat-title">Total Completed</div>
+        <div class="stat-value">@ViewBag.Completed</div>
+    </div>
+    <div class="stat-card" style="--stat-color: var(--sv-warning);">
+        <div class="stat-title">Pending Bookings</div>
+        <div class="stat-value">@ViewBag.Pending</div>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <a class="btn btn-primary" asp-action="Schedule">+ Add Time Slot</a>
+    <a class="btn btn-outline-light" asp-action="Bookings">View Bookings</a>
+</div>

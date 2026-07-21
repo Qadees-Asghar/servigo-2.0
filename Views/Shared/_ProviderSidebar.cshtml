@@ -1,0 +1,39 @@
+@{
+    string active = ViewData["Active"]?.ToString() ?? "";
+    string uid = User.GetUserID();
+    int unread = NotificationDAL.GetUnreadCount(uid);
+    string Cls(string key) => "nav-link" + (active == key ? " active" : "");
+}
+<div class="sidebar">
+    <div class="brand">SERVIGO</div>
+    <div class="role-tag">Provider</div>
+    <div class="user-chip">
+        <div class="name">@User.GetFullName()</div>
+        <div class="id">@uid</div>
+    </div>
+    <nav class="flex-grow-1">
+        <a class="@Cls("home")" asp-controller="Provider" asp-action="Index">🏠 Dashboard</a>
+        <a class="@Cls("services")" asp-controller="Provider" asp-action="Services">🔧 My Services</a>
+        <a class="@Cls("schedule")" asp-controller="Provider" asp-action="Schedule">📅 My Schedule</a>
+        <a class="@Cls("bookings")" asp-controller="Provider" asp-action="Bookings">📋 Incoming Bookings</a>
+        <a class="@Cls("feedback")" asp-controller="Provider" asp-action="Feedback">📝 Feedback</a>
+        <a class="@Cls("notifications")" asp-controller="Provider" asp-action="Notifications">
+            🔔 Notifications
+            @if (unread > 0)
+            {
+                <span class="badge bg-danger rounded-pill">@(unread > 99 ? "99+" : unread.ToString())</span>
+            }
+        </a>
+    </nav>
+    <div class="sidebar-bottom">
+        <form asp-controller="Provider" asp-action="DeleteAccount" method="post"
+              onsubmit="return confirm('Permanently delete your account? All your services, slots and bookings will be removed. This cannot be undone.');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-delete-acct btn-sm">🗑 Delete Account</button>
+        </form>
+        <form asp-controller="Account" asp-action="Logout" method="post" onsubmit="return confirm('Logout?');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-logout">⏻ Logout</button>
+        </form>
+    </div>
+</div>

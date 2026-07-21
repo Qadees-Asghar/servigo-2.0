@@ -1,0 +1,80 @@
+@model List<BookingModel>
+@{ Layout = "_AppLayout"; }
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">You have no bookings yet. <a asp-action="Browse">Browse services</a> to get started.</div>
+}
+else
+{
+    <div class="table-wrap mb-3">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>#</th><th>Service</th><th>Provider</th><th>Slot</th><th>Price</th><th>Status</th><th>Booked</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td>#@b.BookingID</td>
+                        <td>@b.ServiceName</td>
+                        <td>@b.ProviderName</td>
+                        <td>@b.SlotDisplay</td>
+                        <td>Rs. @b.Price.ToString("N0")</td>
+                        <td><partial name="_StatusPill" model="@b.StatusName" /></td>
+                        <td class="text-secondary small">@b.BookedAtDisplay</td>
+                        <td class="text-end">
+                            @if (b.StatusID == 1)
+                            {
+                                <form asp-action="CancelBooking" method="post" class="d-inline" onsubmit="return confirm('Cancel Booking #@b.BookingID?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@b.BookingID" />
+                                    <button class="btn btn-sm btn-danger">Cancel</button>
+                                </form>
+                            }
+                            @if (b.StatusID == 3 && !b.HasRated)
+                            {
+                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#rate-@b.BookingID">⭐ Rate</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="text-secondary small">Cancel: Pending only. &nbsp; Rate: Completed only.</p>
+}
+
+@foreach (var b in Model.Where(x => x.StatusID == 3 && !x.HasRated))
+{
+    <div class="modal fade" id="rate-@b.BookingID" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="SubmitReview" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookingId" value="@b.BookingID" />
+                    <input type="hidden" name="providerId" value="@b.ProviderID" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Rate @b.ProviderName</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="star-radio mb-3">
+                            @for (int i = 5; i >= 1; i--)
+                            {
+                                <input type="radio" name="stars" id="star-@b.BookingID-@i" value="@i" required />
+                                <label for="star-@b.BookingID-@i">★</label>
+                            }
+                        </div>
+                        <textarea class="form-control" name="comment" rows="3" placeholder="Share your experience…"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit Rating</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

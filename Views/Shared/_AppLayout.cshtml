@@ -1,0 +1,51 @@
+@{
+    var role = User.IsInRole("Admin") ? "Admin" : User.IsInRole("Provider") ? "Provider" : "Customer";
+    string sidebarPartial = role switch
+    {
+        "Admin" => "_AdminSidebar",
+        "Provider" => "_ProviderSidebar",
+        _ => "_CustomerSidebar"
+    };
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["PageTitle"] - SERVIGO</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-shell">
+        <partial name="@sidebarPartial" />
+        <div class="content">
+            <div class="content-header">
+                <h1>@ViewData["PageTitle"]</h1>
+                @if (ViewData["PageSubtitle"] != null)
+                {
+                    <p>@ViewData["PageSubtitle"]</p>
+                }
+            </div>
+            <div class="content-body">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["Error"]</div>
+                }
+                @if (TempData["Info"] != null)
+                {
+                    <div class="alert alert-info">@TempData["Info"]</div>
+                }
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,69 @@
+@model List<ServiceModel>
+@{
+    Layout = "_AppLayout";
+    var options = (string[])ViewBag.ServiceOptions;
+}
+
+<div class="card p-4 mb-4">
+    <h6 class="mb-3" style="color:var(--sv-accent)">Add New Service</h6>
+    <form asp-action="AddService" method="post" class="row g-2 align-items-end">
+        @Html.AntiForgeryToken()
+        <div class="col-md-4">
+            <label class="form-label">Service Type</label>
+            <select class="form-select" name="serviceName" required>
+                @foreach (var o in options)
+                {
+                    <option value="@o">@o</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Description (optional)</label>
+            <input class="form-control" type="text" name="description" placeholder="e.g. Includes labour and parts…" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Price (PKR)</label>
+            <input class="form-control" type="number" step="0.01" min="0.01" name="price" placeholder="0.00" required />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100">+ Add</button>
+        </div>
+    </form>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">You haven't added any services yet.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Service</th><th>Description</th><th>Price</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.ServiceName</td>
+                        <td class="text-secondary">@s.Description</td>
+                        <td>Rs. @s.Price.ToString("N0")</td>
+                        <td>
+                            @if (s.IsActive) { <span class="status-pill status-Accepted">Active</span> }
+                            else { <span class="status-pill status-Cancelled">Inactive</span> }
+                        </td>
+                        <td class="text-end">
+                            @if (s.IsActive)
+                            {
+                                <form asp-action="DeactivateService" method="post" class="d-inline" onsubmit="return confirm('Deactivate this service? It will be hidden from customers.');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="serviceId" value="@s.ServiceID" />
+                                    <button class="btn btn-sm btn-danger">Deactivate</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

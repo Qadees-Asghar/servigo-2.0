@@ -1,0 +1,28 @@
+@{
+    ViewData["PageTitle"] = $"Hello, {ViewBag.FirstName}! 👋";
+    ViewData["PageSubtitle"] = "Choose a category to explore services:";
+    Layout = "_AppLayout";
+    var categories = (List<CategoryOption>)ViewBag.Categories;
+
+    var iconMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Electrician", "⚡" }, { "Plumber", "🔧" }, { "Mechanic", "🚗" }, { "Laundry", "🧺" },
+        { "Painter", "🎨" }, { "Carpenter", "🪚" }, { "Cleaner", "🧹" }, { "AC Repair", "❄️" },
+        { "Mason", "🧱" }, { "Gardener", "🌱" }, { "Pest Control", "🐛" }, { "Roofing", "🏠" }
+    };
+}
+
+<div class="row g-3 mb-4">
+    @foreach (var c in categories)
+    {
+        string icon = iconMap.TryGetValue(c.CategoryName, out var ic) ? ic : "🛠";
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <a class="cat-card d-block text-decoration-none" asp-action="Browse" asp-route-categoryId="@c.CategoryID">
+                <span class="icon">@icon</span>
+                <span>@c.CategoryName</span>
+            </a>
+        </div>
+    }
+</div>
+
+<a class="btn btn-primary btn-lg" asp-action="Browse">Browse All Services →</a>

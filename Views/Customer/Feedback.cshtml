@@ -1,0 +1,54 @@
+@model List<FeedbackReportRow>
+@{ Layout = "_AppLayout"; }
+
+<div class="card p-4 mb-4" style="max-width:640px;">
+    <form asp-action="Feedback" method="post">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label class="form-label">Report Type</label>
+            <select class="form-select" name="reportType">
+                <option>Feedback</option>
+                <option>Report System Issue</option>
+                <option>Report a Provider</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input class="form-control" type="text" name="subject" placeholder="Brief subject line…" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="4" placeholder="Describe in detail…" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Report</button>
+    </form>
+</div>
+
+<h5 class="mb-2" style="color:var(--sv-info)">Your Submissions</h5>
+@if (Model.Count == 0)
+{
+    <div class="empty-state">You haven't submitted any reports yet.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Type</th><th>Subject</th><th>Description</th><th>Status</th><th>Submitted</th></tr></thead>
+            <tbody>
+                @foreach (var f in Model)
+                {
+                    <tr>
+                        <td>@f.ReportType</td>
+                        <td>@f.Subject</td>
+                        <td class="text-secondary">@f.Description</td>
+                        <td>
+                            @if (f.IsResolved) { <span class="status-pill status-Completed">Resolved</span> }
+                            else { <span class="status-pill status-Pending">Open</span> }
+                        </td>
+                        <td class="text-secondary small">@f.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

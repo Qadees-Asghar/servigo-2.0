@@ -1,0 +1,61 @@
+@model List<TimeSlotModel>
+@{ Layout = "_AppLayout"; }
+
+<div class="card p-4 mb-4">
+    <h6 class="mb-3" style="color:var(--sv-accent)">Add New Time Slot</h6>
+    <form asp-action="AddSlot" method="post" class="row g-2 align-items-end">
+        @Html.AntiForgeryToken()
+        <div class="col-md-3">
+            <label class="form-label">Date</label>
+            <input class="form-control" type="date" name="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Start Time</label>
+            <input class="form-control" type="time" name="startTime" value="09:00" required />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">End Time</label>
+            <input class="form-control" type="time" name="endTime" value="10:00" required />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success w-100">+ Add Slot</button>
+        </div>
+    </form>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">No time slots yet. Add one above.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Date</th><th>Time</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.DateDisplay</td>
+                        <td>@s.TimeDisplay</td>
+                        <td>
+                            @if (s.IsAvailable) { <span class="status-pill status-Accepted">Available</span> }
+                            else { <span class="status-pill status-Completed">Booked</span> }
+                        </td>
+                        <td class="text-end">
+                            @if (s.IsAvailable)
+                            {
+                                <form asp-action="DeleteSlot" method="post" class="d-inline" onsubmit="return confirm('Delete this time slot?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="slotId" value="@s.SlotID" />
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+<p class="text-secondary small mt-2">Only available (unbooked) slots can be deleted.</p>

@@ -1,0 +1,36 @@
+@{
+    string active = ViewData["Active"]?.ToString() ?? "";
+    string uid = User.GetUserID();
+    int unread = NotificationDAL.GetUnreadCount(uid);
+    string Cls(string key) => "nav-link" + (active == key ? " active" : "");
+}
+<div class="sidebar">
+    <div class="brand">SERVIGO</div>
+    <div class="role-tag">Admin Panel</div>
+    <div class="user-chip">
+        <div class="name">@User.GetFullName()</div>
+        <div class="id">@uid</div>
+    </div>
+    <nav class="flex-grow-1">
+        <a class="@Cls("home")" asp-controller="Admin" asp-action="Index">⊞ Dashboard</a>
+        <a class="@Cls("users")" asp-controller="Admin" asp-action="Users">👥 Manage Users</a>
+        <a class="@Cls("providers")" asp-controller="Admin" asp-action="Providers">🔧 Manage Providers</a>
+        <a class="@Cls("bookings")" asp-controller="Admin" asp-action="Bookings">📋 All Bookings</a>
+        <a class="@Cls("analytics")" asp-controller="Admin" asp-action="Analytics">📊 Analytics</a>
+        <a class="@Cls("reports")" asp-controller="Admin" asp-action="Reports">📝 Reports</a>
+        <a class="@Cls("logs")" asp-controller="Admin" asp-action="Logs">📜 Audit Logs</a>
+        <a class="@Cls("notifications")" asp-controller="Admin" asp-action="Notifications">
+            🔔 Notifications
+            @if (unread > 0)
+            {
+                <span class="badge bg-danger rounded-pill">@(unread > 99 ? "99+" : unread.ToString())</span>
+            }
+        </a>
+    </nav>
+    <div class="sidebar-bottom">
+        <form asp-controller="Account" asp-action="Logout" method="post" onsubmit="return confirm('Logout from SERVIGO?');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-logout">⏻ Logout</button>
+        </form>
+    </div>
+</div>

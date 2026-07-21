@@ -1,0 +1,25 @@
+@model DashboardStats
+@{ Layout = "_AppLayout"; }
+
+<div class="d-flex flex-wrap gap-3">
+    <div class="stat-card" style="--stat-color: var(--sv-info);">
+        <div class="stat-title">Total Customers</div>
+        <div class="stat-value">@Model.TotalCustomers</div>
+    </div>
+    <div class="stat-card" style="--stat-color: var(--sv-success);">
+        <div class="stat-title">Total Providers</div>
+        <div class="stat-value">@Model.TotalProviders</div>
+    </div>
+    <div class="stat-card" style="--stat-color: var(--sv-gold);">
+        <div class="stat-title">Pending Approvals</div>
+        <div class="stat-value">@Model.PendingApprovals</div>
+    </div>
+    <div class="stat-card" style="--stat-color: var(--sv-accent);">
+        <div class="stat-title">Total Bookings</div>
+        <div class="stat-value">@Model.TotalBookings</div>
+    </div>
+    <div class="stat-card" style="--stat-color: var(--sv-success);">
+        <div class="stat-title">Completed</div>
+        <div class="stat-value">@Model.CompletedBookings</div>
+    </div>
+</div>

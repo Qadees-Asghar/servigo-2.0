@@ -1,0 +1,55 @@
+@model List<BookingModel>
+@{ Layout = "_AppLayout"; }
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">No booking requests yet.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>#</th><th>Service</th><th>Customer</th><th>Phone</th><th>Slot</th><th>Price</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td>#@b.BookingID</td>
+                        <td>@b.ServiceName</td>
+                        <td>@b.CustomerName</td>
+                        <td>@b.CustomerPhone</td>
+                        <td>@b.SlotDisplay</td>
+                        <td>Rs. @b.Price.ToString("N0")</td>
+                        <td><partial name="_StatusPill" model="@b.StatusName" /></td>
+                        <td class="text-end">
+                            @if (b.StatusID == 1)
+                            {
+                                <form asp-action="UpdateBookingStatus" method="post" class="d-inline" onsubmit="return confirm('Accept Booking #@b.BookingID?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@b.BookingID" />
+                                    <input type="hidden" name="newStatus" value="2" />
+                                    <button class="btn btn-sm btn-success">Accept</button>
+                                </form>
+                                <form asp-action="UpdateBookingStatus" method="post" class="d-inline" onsubmit="return confirm('Reject Booking #@b.BookingID?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@b.BookingID" />
+                                    <input type="hidden" name="newStatus" value="5" />
+                                    <button class="btn btn-sm btn-danger">Reject</button>
+                                </form>
+                            }
+                            @if (b.StatusID == 2)
+                            {
+                                <form asp-action="UpdateBookingStatus" method="post" class="d-inline" onsubmit="return confirm('Mark Booking #@b.BookingID as Completed?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@b.BookingID" />
+                                    <input type="hidden" name="newStatus" value="3" />
+                                    <button class="btn btn-sm btn-primary">Mark Done</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,55 @@
+@model List<ServiceModel>
+@{
+    Layout = "_AppLayout";
+    var categories = (List<CategoryOption>)ViewBag.Categories;
+    int? catId = ViewBag.CategoryId;
+    string q = ViewBag.Query;
+}
+
+<div class="toolbar d-flex flex-wrap gap-2 align-items-center">
+    <form asp-action="Browse" method="get" class="d-flex flex-wrap gap-2 align-items-center flex-grow-1">
+        <input class="form-control" style="max-width:240px;" type="text" name="q" value="@q" placeholder="Search services…" />
+        <select class="form-select" style="max-width:220px;" name="categoryId" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            @foreach (var c in categories)
+            {
+                <option value="@c.CategoryID" selected="@(catId == c.CategoryID)">@c.CategoryName</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a class="btn btn-outline-light" asp-action="Index">← Back to Home</a>
+    </form>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">No services found. Try a different search or category.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Service</th><th>Provider</th><th>Category</th><th>Price</th><th>Rating</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-bold">@s.ServiceName</div>
+                            <div class="text-secondary small">@s.Description</div>
+                        </td>
+                        <td>@s.ProviderName</td>
+                        <td>@s.CategoryName</td>
+                        <td>Rs. @s.Price.ToString("N0")</td>
+                        <td class="stars">@(new string('★', (int)Math.Round(s.AverageRating)))</td>
+                        <td class="text-end"><a class="btn btn-sm btn-primary" asp-action="Book" asp-route-serviceId="@s.ServiceID">Book →</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

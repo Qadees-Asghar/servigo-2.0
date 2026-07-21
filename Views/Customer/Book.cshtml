@@ -1,0 +1,38 @@
+@model BookViewModel
+@{ Layout = "_AppLayout"; }
+
+<div class="card p-4" style="max-width:600px;">
+    <h5 class="mb-1">Service: @Model.ServiceName</h5>
+    <p class="text-secondary mb-3">Provider: @Model.ProviderName &nbsp;•&nbsp; Rs. @Model.Price.ToString("N0")</p>
+
+    @if (Model.Slots.Count == 0)
+    {
+        <div class="empty-state">No available slots in the next 7 days for this provider.</div>
+        <a class="btn btn-outline-light" asp-action="Browse">← Back to Services</a>
+    }
+    else
+    {
+        <form asp-action="Book" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="serviceId" value="@Model.ServiceID" />
+
+            <div class="mb-3">
+                <label class="form-label">Available Time Slots (next 7 days)</label>
+                <select class="form-select" name="slotId" required>
+                    @foreach (var slot in Model.Slots)
+                    {
+                        <option value="@slot.SlotID">@slot.DateDisplay &nbsp; @slot.TimeDisplay</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Notes (optional)</label>
+                <textarea class="form-control" name="notes" rows="3" placeholder="Any special instructions…"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">✔ Confirm Booking</button>
+            <a class="btn btn-outline-light" asp-action="Browse">← Back to Services</a>
+        </form>
+    }
+</div>

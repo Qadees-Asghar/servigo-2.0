@@ -1,0 +1,18 @@
+@model SignupViewModel
+@{
+    ViewData["Title"] = "Account Created";
+    Layout = "_Layout";
+}
+<div class="auth-wrap">
+    <div class="auth-card text-center">
+        <div class="brand">SERVIGO</div>
+        <div class="mt-3" style="font-size:2.5rem;">✔</div>
+        <h4 class="mt-2">Account created successfully!</h4>
+        <p class="subtitle">Your User ID</p>
+        <div class="p-3 mb-3" style="background:var(--sv-surface2); border-radius:10px; font-size:1.4rem; font-weight:800; color:var(--sv-gold); letter-spacing:1px;">
+            @Model.CreatedUserID
+        </div>
+        <p class="text-warning">Save this ID — you need it every time you login.</p>
+        <a class="btn btn-primary w-100 py-2 mt-2" asp-controller="Account" asp-action="Login">Go to Login</a>
+    </div>
+</div>

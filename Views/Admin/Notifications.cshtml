@@ -1,0 +1,31 @@
+@model List<NotificationModel>
+@{ Layout = "_AppLayout"; }
+
+<div class="mb-3">
+    <form asp-action="MarkAllRead" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary btn-sm">Mark All Read</button>
+    </form>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">No notifications yet.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Message</th><th>Time</th></tr></thead>
+            <tbody>
+                @foreach (var n in Model)
+                {
+                    <tr class="@(n.IsRead ? "" : "fw-bold")">
+                        <td>@n.Message</td>
+                        <td class="text-secondary small">@n.TimeDisplay</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

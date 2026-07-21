@@ -1,0 +1,28 @@
+@model List<AuditLogModel>
+@{ Layout = "_AppLayout"; }
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">No activity logged yet.</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Table</th><th>Action</th><th>Record</th><th>By</th><th>Details</th><th>Logged At</th></tr></thead>
+            <tbody>
+                @foreach (var l in Model)
+                {
+                    <tr>
+                        <td>@l.TableName</td>
+                        <td>@l.Action</td>
+                        <td>@l.RecordID</td>
+                        <td>@l.PerformedBy</td>
+                        <td class="text-secondary small">@l.Details</td>
+                        <td class="text-secondary small">@l.LoggedAtDisplay</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
