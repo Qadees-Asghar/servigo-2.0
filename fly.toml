@@ -1,0 +1,26 @@
+# Fly.io app config for SERVIGO.
+#
+# First-time setup (run these yourself — requires your own Fly account/login):
+#   flyctl auth login
+#   flyctl launch --no-deploy          # reuses this file; pick/confirm an app name + region when asked
+#   flyctl volumes create servigo_data --size 1   # persistent disk for the SQLite file
+#   flyctl deploy
+#
+# After that, push to GitHub `main` and the fly-deploy.yml workflow deploys automatically
+# (needs a FLY_API_TOKEN secret in the repo — see README).
+
+app = "servigo-2-0"          # must be globally unique on Fly — flyctl will prompt you to change it if taken
+primary_region = "sin"       # adjust to whichever Fly region is closest to your users
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[mounts]]
+  source = "servigo_data"
+  destination = "/app/App_Data"

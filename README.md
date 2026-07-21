@@ -77,28 +77,42 @@ docker run -p 8080:8080 -v servigo-data:/app/App_Data servigo-web
 
 The volume mount keeps `App_Data/servigo.db` across container restarts.
 
-### Option C — Render, via GitHub (recommended, and what this repo is set up for)
+### Option C — Fly.io, via GitHub (what this repo is set up for)
 
-A `render.yaml` blueprint is included at the repo root, so Render can deploy this repo
-with almost no manual configuration:
+`fly.toml` and `.github/workflows/fly-deploy.yml` are included. One-time setup (needs
+your own Fly account — sign-up may ask for a payment method as an anti-abuse check, even
+though the resources this app needs fit in the free allowance):
 
-1. Go to [render.com](https://render.com) and sign in / sign up with your GitHub account.
-2. **New +** → **Blueprint** → select the `servigo-2.0` repo. Render will detect
-   `render.yaml` automatically and configure a Docker-based web service from it.
-3. Click **Apply** / **Deploy**. Render builds the `Dockerfile` and starts the service —
-   first build takes a few minutes.
-4. Every future `git push` to `main` auto-deploys.
+1. Install the CLI and log in:
+   ```bash
+   curl -L https://fly.io/install.sh | sh    # or: iwr https://fly.io/install.ps1 -useb | iex   (Windows)
+   flyctl auth login
+   ```
+2. From the repo root, launch the app (reuses `fly.toml`; it'll prompt you to confirm or
+   change the app name if `servigo-2-0` is taken, and pick a region):
+   ```bash
+   flyctl launch --no-deploy
+   ```
+3. Create the persistent volume for the SQLite database (must match `fly.toml`'s mount):
+   ```bash
+   flyctl volumes create servigo_data --size 1
+   ```
+4. Deploy once manually to confirm it works:
+   ```bash
+   flyctl deploy
+   ```
+5. Wire up auto-deploy from GitHub: generate a deploy token —
+   ```bash
+   flyctl tokens create deploy
+   ```
+   then in the GitHub repo: **Settings → Secrets and variables → Actions → New repository
+   secret**, name it `FLY_API_TOKEN`, paste the token. Every future push to `main` now
+   auto-deploys via the included workflow.
 
-**Free-tier caveats** (this is what `render.yaml` is configured for by default):
-- No persistent disk — `App_Data/servigo.db` resets on every deploy or restart. Fine
-  for demos, not for real data.
-- The service spins down after 15 minutes idle; the next request takes 30–60s to wake it.
+This config gives you a **persistent volume out of the box** — no separate upgrade needed
+for the database to survive restarts, unlike the Render free tier.
 
-To get persistent data: in the Render dashboard, upgrade the service to the **Starter**
-plan (or higher) and attach a disk mounted at `/app/App_Data` — the commented-out block
-at the bottom of `render.yaml` shows the config.
-
-### Other PaaS options (Fly.io, Railway, Azure App Service, etc.)
+### Other PaaS options (Render, Railway, Azure App Service, etc.)
 
 Any of these can run the included `Dockerfile` directly. The one thing to check on
 whichever you pick: make sure `App_Data/` is on **persistent** storage, not an ephemeral
