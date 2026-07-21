@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: servigo-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /Account/Login
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+    # Free plan has no persistent disk, so App_Data/servigo.db resets on every
+    # deploy/restart. To keep data across restarts, upgrade this service to the
+    # Starter plan (or higher) in the Render dashboard and add a disk there:
+    #   disk:
+    #     name: servigo-data
+    #     mountPath: /app/App_Data
+    #     sizeGB: 1

@@ -68,31 +68,41 @@ Copy the `publish` folder to any server with the .NET runtime installed and run 
 
 ### Option B — Docker
 
-Add this `Dockerfile` (not included by default, since it depends on your hosting target):
+A `Dockerfile` and `.dockerignore` are included at the repo root:
 
-```dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
-COPY . .
-RUN dotnet publish -c Release -o /app
-
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
-WORKDIR /app
-COPY --from=build /app .
-VOLUME /app/App_Data
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
-ENTRYPOINT ["dotnet", "SERVIGO.Web.dll"]
+```bash
+docker build -t servigo-web .
+docker run -p 8080:8080 -v servigo-data:/app/App_Data servigo-web
 ```
 
-Mount a volume at `/app/App_Data` so the SQLite database survives container restarts.
+The volume mount keeps `App_Data/servigo.db` across container restarts.
 
-### Option C — A PaaS with persistent disk (Render, Fly.io, Railway, Azure App Service, etc.)
+### Option C — Render, via GitHub (recommended, and what this repo is set up for)
 
-Any of these can run a published .NET app directly. The one thing to check: make sure
-`App_Data/` is on **persistent** storage, not an ephemeral filesystem — otherwise the
-database resets on every redeploy/restart. Most of these platforms offer a small
-persistent volume/disk you can mount at that path.
+A `render.yaml` blueprint is included at the repo root, so Render can deploy this repo
+with almost no manual configuration:
+
+1. Go to [render.com](https://render.com) and sign in / sign up with your GitHub account.
+2. **New +** → **Blueprint** → select the `servigo-2.0` repo. Render will detect
+   `render.yaml` automatically and configure a Docker-based web service from it.
+3. Click **Apply** / **Deploy**. Render builds the `Dockerfile` and starts the service —
+   first build takes a few minutes.
+4. Every future `git push` to `main` auto-deploys.
+
+**Free-tier caveats** (this is what `render.yaml` is configured for by default):
+- No persistent disk — `App_Data/servigo.db` resets on every deploy or restart. Fine
+  for demos, not for real data.
+- The service spins down after 15 minutes idle; the next request takes 30–60s to wake it.
+
+To get persistent data: in the Render dashboard, upgrade the service to the **Starter**
+plan (or higher) and attach a disk mounted at `/app/App_Data` — the commented-out block
+at the bottom of `render.yaml` shows the config.
+
+### Other PaaS options (Fly.io, Railway, Azure App Service, etc.)
+
+Any of these can run the included `Dockerfile` directly. The one thing to check on
+whichever you pick: make sure `App_Data/` is on **persistent** storage, not an ephemeral
+filesystem — otherwise the database resets on every redeploy/restart.
 
 ### Connection string
 
