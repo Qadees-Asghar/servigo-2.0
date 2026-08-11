@@ -1,9 +1,6 @@
 # SERVIGO — Web Edition
 
-A browser-based rewrite of the SERVIGO desktop app (originally C# WinForms + SQL Server).
-This version is an ASP.NET Core MVC web app backed by **SQLite** — a single database
-file with no server process, no SQL Server Management Studio, and no Visual Studio required.
-
+This version is an ASP.NET Core MVC web app backed by **SQLite**.
 ## Requirements
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) — that's it. No SQL Server, no SSMS, no IDE.
@@ -24,14 +21,8 @@ dotnet run
 
 Then open **http://localhost:5188** in a browser.
 
-The first time it runs, it automatically creates `App_Data/servigo.db` (SQLite) and
-the full schema, and seeds a default admin account:
 
-- **Email:** `admin@servigo.com`
-- **User ID:** `SRV-00001`
-- **Password:** `Admin@123`
 
-Change that password (or delete the account and re-seed) before using this for anything real.
 
 To reset all data, stop the app and delete `App_Data/servigo.db` — it will be recreated
 empty (with a fresh admin account) on the next run.
