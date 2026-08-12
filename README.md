@@ -1,4 +1,4 @@
-# SERVIGO — Web Edition
+# SERVIGO/Web Edition
 
 This version is an ASP.NET Core MVC web app backed by **SQLite**.
 ## Requirements
