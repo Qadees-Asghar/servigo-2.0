@@ -24,8 +24,6 @@ Then open **http://localhost:5188** in a browser.
 
 
 
-To reset all data, stop the app and delete `App_Data/servigo.db` — it will be recreated
-empty (with a fresh admin account) on the next run.
 
 ## What changed from the desktop version
 
